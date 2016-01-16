@@ -14,28 +14,34 @@
         <input type="submit" value="Sned!">
     </form>
 <ul id="logs"></ul>
+<div id="news"></div>
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
   $(function() {
-    var socket = io.connect();
+    var chat = io('/chat');
+    var news = io('/news');
 
     $('#myForm').submit(function(e) {
         e.preventDefault();
-        socket.json.emit('emit_from_client',{
+        chat.json.emit('emit_from_client',{
             msg: $('#msg').val(),
             room: $('#rooms').val()
         });
         $('#msg').val('').focus();
     })
 
-    socket.on('emit_from_server', function(data) {
+    chat.on('emit_from_server', function(data) {
         $('#logs').append($('<li>').text(data));
     })
 
-  })
+    news.on('emit_from_server', function(data) {
+        $('#news').text(data);
+    })
+
+})
   </script>
   </body>
 </html>
