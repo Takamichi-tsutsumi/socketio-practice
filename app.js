@@ -3,8 +3,8 @@ var app = require('http').createServer(handler),
   fs = require('fs');
 
 app.listen(1337);
-function handler(req, res) {
 
+function handler(req, res) {
   fs.readFile(__dirname + '/index.html', function(err, data) {
     if (err) {
       res.writeHead(500);
@@ -14,5 +14,18 @@ function handler(req, res) {
     res.write(data);
     res.end();
   })
-
 }
+
+io.sockets.on('connection', function(socket) {
+  var client_name;
+  socket.on('emit_from_client', function(data) {
+    if (data.name) {
+      client_name = data.name;
+    }
+    if (client_name) {
+      io.sockets.emit('emit_from_server', '[' + client_name + '] : ' + data.msg);
+    } else {
+      io.sockets.emit('emit_from_server', '[' + socket.id + '] : ' + data.msg);
+    }
+  });
+});
